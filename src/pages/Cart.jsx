@@ -1,12 +1,10 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CartItem } from "../components";
-import { clearCart } from "../redux/actions/cart";
+import { clearCart, removeCartItem, plusCartItem, minusCartItem} from "../redux/actions/cart";
 import { Link } from "react-router-dom";
 
 import cartEmptyImage from "../assets/img/empty-cart.png";
-
-
 
 function Cart() {
   const dispatch = useDispatch();
@@ -15,8 +13,25 @@ function Cart() {
   const addedPizzas = Object.keys(items).map((key) => {
     return items[key].items[0];
   });
+
   const onClearCart = () => {
     dispatch(clearCart());
+  };
+
+  const onRemoveItem = (id) => {
+    dispatch(removeCartItem(id));
+  };
+
+  const onPlusItem = (id) => {
+    dispatch(plusCartItem(id))
+  }
+
+  const onMinusItem = (id) => {
+    dispatch(minusCartItem(id))
+  }
+
+  const onClickOrder = () => {
+    console.log('ВАШ ЗАКАЗ', items);
   };
   return (
     <div className="content">
@@ -100,11 +115,15 @@ function Cart() {
             <div className="content__items">
               {addedPizzas.map((obj) => (
                 <CartItem
+                  id={obj.id}
                   name={obj.name}
                   type={obj.type}
                   size={obj.size}
                   totalPrice={items[obj.id].totalPrice}
                   totalCount={items[obj.id].items.length}
+                  onRemove={onRemoveItem}
+                  onMinus = {onMinusItem}
+                  onPlus = {onPlusItem}
                 />
               ))}
             </div>
@@ -120,8 +139,8 @@ function Cart() {
                 </span>
               </div>
               <div className="cart__bottom-buttons">
-                <a
-                  href="/"
+                <Link
+                  to="/"
                   className="button button--outline button--add go-back-btn"
                 >
                   <svg
@@ -141,8 +160,8 @@ function Cart() {
                   </svg>
 
                   <span>Вернуться назад</span>
-                </a>
-                <div className="button pay-btn">
+                </Link>
+                <div onClick = {onClickOrder} className="button pay-btn">
                   <span>Оплатить сейчас</span>
                 </div>
               </div>
